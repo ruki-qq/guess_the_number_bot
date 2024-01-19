@@ -1,2 +1,2 @@
-# guess_the_number_bot
+bot# guess_the_number_bot
 Backend for Guess The Number Telegram bot.
