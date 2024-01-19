@@ -1,10 +1,12 @@
 import random
 
+from dotenv import dotenv_values
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
-BOT_TOKEN = '6467401080:AAHDSD8TmA0eptdbMP1GlTWunuiUNPMKWL0'
+env = dotenv_values('../.env')
+BOT_TOKEN = env.get('TOKEN')
 
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher()
@@ -32,25 +34,25 @@ async def process_start_command(message: Message):
             'secret_number': None,
             'attempts': None,
             'total_games': 0,
-            'wins': 0
+            'wins': 0,
         }
 
 
 @dp.message(Command(commands='help'))
 async def process_help_command(message: Message):
     await message.answer(
-        f'Правила игры:\n\nЯ загадываю число от 1 до 100, '
+        'Правила игры:\n\nЯ загадываю число от 1 до 100, '
         f'а вам нужно его угадать\nУ вас есть {ATTEMPTS} '
-        f'попыток\n\nДоступные команды:\n/help - правила '
-        f'игры и список команд\n/cancel - выйти из игры\n'
-        f'/stat - посмотреть статистику\n\nДавай сыграем?'
+        'попыток\n\nДоступные команды:\n/help - правила '
+        'игры и список команд\n/cancel - выйти из игры\n'
+        '/stat - посмотреть статистику\n\nДавай сыграем?'
     )
 
 
 @dp.message(Command(commands='stat'))
 async def process_stat_command(message: Message):
     await message.answer(
-        f'Всего игр сыграно: '
+        'Всего игр сыграно: '
         f'{users[message.from_user.id]["total_games"]}\n'
         f'Игр выиграно: {users[message.from_user.id]["wins"]}'
     )
@@ -61,27 +63,21 @@ async def process_cancel_command(message: Message):
     if users[message.from_user.id]['in_game']:
         users[message.from_user.id]['in_game'] = False
         await message.answer(
-            'Вы вышли из игры. Если захотите сыграть '
-            'снова - напишите об этом'
+            'Вы вышли из игры. Если захотите сыграть снова - напишите об этом'
         )
     else:
-        await message.answer(
-            'А мы итак с вами не играем. '
-            'Может, сыграем разок?'
-        )
+        await message.answer('А мы итак с вами не играем. Может, сыграем разок?')
 
 
-@dp.message(F.text.lower().in_(['да', 'давай', 'сыграем', 'игра',
-                                'играть', 'хочу играть']))
+@dp.message(
+    F.text.lower().in_(['да', 'давай', 'сыграем', 'игра', 'играть', 'хочу играть'])
+)
 async def process_positive_answer(message: Message):
     if not users[message.from_user.id]['in_game']:
         users[message.from_user.id]['in_game'] = True
         users[message.from_user.id]['secret_number'] = get_random_number()
         users[message.from_user.id]['attempts'] = ATTEMPTS
-        await message.answer(
-            'Ура!\n\nЯ загадал число от 1 до 100, '
-            'попробуй угадать!'
-        )
+        await message.answer('Ура!\n\nЯ загадал число от 1 до 100, попробуй угадать!')
     else:
         await message.answer(
             'Пока мы играем в игру я могу '
@@ -94,13 +90,11 @@ async def process_positive_answer(message: Message):
 async def process_negative_answer(message: Message):
     if not users[message.from_user.id]['in_game']:
         await message.answer(
-            'Жаль :(\n\nЕсли захотите поиграть - просто '
-            'напишите об этом'
+            'Жаль :(\n\nЕсли захотите поиграть - просто напишите об этом'
         )
     else:
         await message.answer(
-            'Мы же сейчас с вами играем. Присылайте, '
-            'пожалуйста, числа от 1 до 100'
+            'Мы же сейчас с вами играем. Присылайте, пожалуйста, числа от 1 до 100'
         )
 
 
@@ -111,10 +105,7 @@ async def process_numbers_answer(message: Message):
             users[message.from_user.id]['in_game'] = False
             users[message.from_user.id]['total_games'] += 1
             users[message.from_user.id]['wins'] += 1
-            await message.answer(
-                'Ура!!! Вы угадали число!\n\n'
-                'Может, сыграем еще?'
-            )
+            await message.answer('Ура!!! Вы угадали число!\n\nМожет, сыграем еще?')
         elif int(message.text) > users[message.from_user.id]['secret_number']:
             users[message.from_user.id]['attempts'] -= 1
             await message.answer('Мое число меньше')
@@ -126,10 +117,10 @@ async def process_numbers_answer(message: Message):
             users[message.from_user.id]['in_game'] = False
             users[message.from_user.id]['total_games'] += 1
             await message.answer(
-                f'К сожалению, у вас больше не осталось '
-                f'попыток. Вы проиграли :(\n\nМое число '
+                'К сожалению, у вас больше не осталось '
+                'попыток. Вы проиграли :(\n\nМое число '
                 f'было {users[message.from_user.id]["secret_number"]}'
-                f'\n\nДавайте сыграем еще?'
+                '\n\nДавайте сыграем еще?'
             )
     else:
         await message.answer('Мы еще не играем. Хотите сыграть?')
@@ -139,13 +130,11 @@ async def process_numbers_answer(message: Message):
 async def process_other_answers(message: Message):
     if users[message.from_user.id]['in_game']:
         await message.answer(
-            'Мы же сейчас с вами играем. '
-            'Присылайте, пожалуйста, числа от 1 до 100'
+            'Мы же сейчас с вами играем. Присылайте, пожалуйста, числа от 1 до 100'
         )
     else:
         await message.answer(
-            'Я довольно ограниченный бот, давайте '
-            'просто сыграем в игру?'
+            'Я довольно ограниченный бот, давайте просто сыграем в игру?'
         )
 
 
