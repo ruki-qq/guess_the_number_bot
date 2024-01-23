@@ -5,6 +5,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
+
 env = dotenv_values('../.env')
 BOT_TOKEN = env.get('TOKEN')
 
@@ -28,14 +29,11 @@ async def process_start_command(message: Message):
         'Чтобы получить правила игры и список доступных '
         'команд - отправьте команду /help'
     )
-    if message.from_user.id not in users:
-        users[message.from_user.id] = {
-            'in_game': False,
-            'secret_number': None,
-            'attempts': None,
-            'total_games': 0,
-            'wins': 0,
-        }
+    session = Session()
+    user_id = message.from_user.id
+    existing_user = session.query(User).filter_by(id=user_id).first()
+    if not existing_user:
+        new_user = User(id=user_id)
 
 
 @dp.message(Command(commands='help'))
@@ -51,6 +49,9 @@ async def process_help_command(message: Message):
 
 @dp.message(Command(commands='stat'))
 async def process_stat_command(message: Message):
+    session = Session()
+    user_id = message.from_user.id
+    existing_user = session.query(User).filter_by(id=user_id).first()
     await message.answer(
         'Всего игр сыграно: '
         f'{users[message.from_user.id]["total_games"]}\n'
