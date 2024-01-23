@@ -5,8 +5,9 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
+from path_config import ENV_DIR
 
-env = dotenv_values('../.env')
+env = dotenv_values(ENV_DIR)
 BOT_TOKEN = env.get('TOKEN')
 
 bot = Bot(BOT_TOKEN)

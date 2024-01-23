@@ -2,7 +2,10 @@ aiofiles==23.2.1
 aiogram==3.3.0
 aiohttp==3.9.1
 aiosignal==1.3.1
+alembic==1.13.1
 annotated-types==0.6.0
+async-timeout==4.0.3
+asyncpg==0.29.0
 attrs==23.2.0
 black==23.12.1
 certifi==2023.11.17
@@ -11,6 +14,8 @@ frozenlist==1.4.1
 greenlet==3.0.3
 idna==3.6
 magic-filter==1.0.12
+Mako==1.3.1
+MarkupSafe==2.1.4
 multidict==6.0.4
 mypy-extensions==1.0.0
 packaging==23.2
