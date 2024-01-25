@@ -15,7 +15,7 @@ engine = create_async_engine(
 
 
 def async_session_gen():
-    return sessionmaker(engine, class_=AsyncSession)
+    return sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 @asynccontextmanager
